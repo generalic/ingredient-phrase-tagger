@@ -20,5 +20,6 @@ setup(
     install_requires=requires,
     packages=find_packages(),
     package_dir={'ingredient_phrase_tagger': 'ingredient_phrase_tagger'},
+    py_modules = ['parser.parse_ingredient_lines']
     **extra
 )
