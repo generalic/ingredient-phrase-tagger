@@ -17,7 +17,6 @@ setup(
     install_requires=requires,
     packages=find_packages(),
     package_dir={
-        'ingredient_phrase_tagger': 'ingredient_phrase_tagger',
-        'ingredient_parser': 'ingredient_parser'
+        'ingredient_phrase_tagger': 'ingredient_phrase_tagger'
     }
 )
