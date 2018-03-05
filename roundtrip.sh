@@ -1,6 +1,6 @@
 #!/bin/sh
-COUNT_TRAIN=3
-COUNT_TEST=3
+COUNT_TRAIN=20000
+COUNT_TEST=2000
 
 echo "generating training data..."
 bin/generate_data --data-path=nyt-ingredients-snapshot-2015_test.csv --count=$COUNT_TRAIN --offset=0 > tmp/train_file || exit 1
