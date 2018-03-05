@@ -3,9 +3,6 @@ import sys
 
 from setuptools import setup, find_packages
 
-import ingredient_phrase_tagger
-
-
 requires, extra = ['Unidecode==0.04.14', 'pandas==0.17.1'], {}
 if sys.version_info >= (3,):
     extra['use_2to3'] = True
@@ -19,7 +16,8 @@ setup(
     license='Apache 2.0',
     install_requires=requires,
     packages=find_packages(),
-    package_dir={'ingredient_phrase_tagger': 'ingredient_phrase_tagger'},
-    py_modules = ['parser.parse_ingredient_lines']
-    **extra
+    package_dir={
+        'ingredient_phrase_tagger': 'ingredient_phrase_tagger',
+        'ingredient_parser': 'ingredient_parser'
+    }
 )
