@@ -1,6 +1,7 @@
-import re
 import decimal
 import optparse
+import re
+
 import pandas as pd
 
 import utils
@@ -32,12 +33,12 @@ class Cli(object):
                 # extract the display name
                 display_input = utils.cleanUnicodeFractions(row["input"])
                 tokens = utils.tokenize(display_input)
-                del(row["input"])
+                del (row["input"])
 
                 rowData = self.addPrefixes([(t, self.matchUp(t, row)) for t in tokens])
 
                 for i, (token, tags) in enumerate(rowData):
-                    features = utils.getFeatures(token, i+1, tokens)
+                    features = utils.getFeatures(token, i + 1, tokens)
                     print utils.joinLine([token] + features + [self.bestTag(tags)])
 
             # ToDo: deal with this
@@ -45,31 +46,6 @@ class Cli(object):
                 pass
 
             print
-
-    def parseNumbers(self, s):
-        """
-        Parses a string that represents a number into a decimal data type so that
-        we can match the quantity field in the db with the quantity that appears
-        in the display name. Rounds the result to 2 places.
-        """
-        ss = utils.unclump(s)
-
-        m3 = re.match('^\d+$', ss)
-        if m3 is not None:
-            return decimal.Decimal(round(float(ss), 2))
-
-        m1 = re.match(r'(\d+)\s+(\d)/(\d)', ss)
-        if m1 is not None:
-            num = int(m1.group(1)) + (float(m1.group(2)) / float(m1.group(3)))
-            return decimal.Decimal(str(round(num,2)))
-
-        m2 = re.match(r'^(\d)/(\d)$', ss)
-        if m2 is not None:
-            num = float(m2.group(1)) / float(m2.group(2))
-            return decimal.Decimal(str(round(num,2)))
-
-        return None
-
 
     def matchUp(self, token, ingredientRow):
         """
@@ -89,7 +65,7 @@ class Cli(object):
         # strip parens from the token, since they often appear in the
         # display_name, but are removed from the comment.
         token = utils.normalizeToken(token)
-        decimalToken = self.parseNumbers(token)
+        decimalToken = utils.parseNumbers(token)
 
         for key, val in ingredientRow.iteritems():
             if isinstance(val, basestring):
@@ -106,7 +82,6 @@ class Cli(object):
                     pass
 
         return ret
-
 
     def addPrefixes(self, data):
         """
@@ -132,7 +107,6 @@ class Cli(object):
 
         return newData
 
-
     def bestTag(self, tags):
 
         if len(tags) == 1:
@@ -156,7 +130,8 @@ class Cli(object):
 
         opts.add_option("--count", default="100", help="(%default)")
         opts.add_option("--offset", default="0", help="(%default)")
-        opts.add_option("--data-path", default="nyt-ingredients-snapshot-2015.csv", help="(%default)")
+        opts.add_option("--data-path", default="nyt-ingredients-snapshot-2015.csv",
+                        help="(%default)")
 
         (options, args) = opts.parse_args(argv)
         return options

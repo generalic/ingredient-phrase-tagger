@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+import decimal
 import re
-import string
 
 
 def tokenize(s):
@@ -15,15 +15,19 @@ def tokenize(s):
     But we must split the text on "cups/" etc. in order to pick it up.
     """
 
-    american_units = ['cup', 'tablespoon', 'teaspoon', 'pound', 'ounce', 'quart', 'pint']
+    american_units = [
+        'cup', 'tablespoon', 'tbsp', 'teaspoon', 'tsp', 'pound', 'ounce', 'quart', 'pint'
+    ]
     for unit in american_units:
         s = s.replace(unit + '/', unit + ' ')
         s = s.replace(unit + 's/', unit + 's ')
 
     return filter(None, re.split(r'([,\(\)])?\s*', clumpFractions(s)))
 
+
 def joinLine(columns):
     return "\t".join(columns)
+
 
 def clumpFractions(s):
     """
@@ -35,6 +39,7 @@ def clumpFractions(s):
         # => "aaa 1$2/3 bbb"
     """
     return re.sub(r'(\d+)\s+(\d)/(\d)', r'\1$\2/\3', s)
+
 
 def cleanUnicodeFractions(s):
     """
@@ -67,11 +72,38 @@ def cleanUnicodeFractions(s):
 
     return s
 
+
+def parseNumbers(s):
+    """
+    Parses a string that represents a number into a decimal data type so that
+    we can match the quantity field in the db with the quantity that appears
+    in the display name. Rounds the result to 2 places.
+    """
+    ss = unclump(s)
+
+    m3 = re.match('^\d+$', ss)
+    if m3 is not None:
+        return decimal.Decimal(round(float(ss), 2))
+
+    m1 = re.match(r'(\d+)\s+(\d)/(\d)', ss)
+    if m1 is not None:
+        num = int(m1.group(1)) + (float(m1.group(2)) / float(m1.group(3)))
+        return decimal.Decimal(str(round(num, 2)))
+
+    m2 = re.match(r'^(\d)/(\d)$', ss)
+    if m2 is not None:
+        num = float(m2.group(1)) / float(m2.group(2))
+        return decimal.Decimal(str(round(num, 2)))
+
+    return None
+
+
 def unclump(s):
     """
     Replacess $'s with spaces. The reverse of clumpFractions.
     """
     return re.sub(r'\$', " ", s)
+
 
 def normalizeToken(s):
     """
@@ -80,6 +112,7 @@ def normalizeToken(s):
     point.
     """
     return singularize(s)
+
 
 def getFeatures(token, index, tokens):
     """
@@ -94,6 +127,7 @@ def getFeatures(token, index, tokens):
         ("Yes" if insideParenthesis(token, tokens) else "No") + "PAREN"
     ]
 
+
 def singularize(word):
     """
     A poor replacement for the pattern.en singularize function, but ok for now.
@@ -102,7 +136,9 @@ def singularize(word):
     units = {
         "cups": u"cup",
         "tablespoons": u"tablespoon",
+        "tbsp": u"tbsp",
         "teaspoons": u"teaspoon",
+        "tsp": u"tsp",
         "pounds": u"pound",
         "ounces": u"ounce",
         "cloves": u"clove",
@@ -132,11 +168,13 @@ def singularize(word):
     else:
         return word
 
+
 def isCapitalized(token):
     """
     Returns true if a given token starts with a capital letter.
     """
     return re.match(r'^[A-Z]', token) is not None
+
 
 def lengthGroup(actualLength):
     """
@@ -148,6 +186,7 @@ def lengthGroup(actualLength):
 
     return "X"
 
+
 def insideParenthesis(token, tokens):
     """
     Returns true if the word is inside parenthesis in the phrase.
@@ -156,7 +195,8 @@ def insideParenthesis(token, tokens):
         return True
     else:
         line = " ".join(tokens)
-        return re.match(r'.*\(.*'+re.escape(token)+'.*\).*',  line) is not None
+        return re.match(r'.*\(.*' + re.escape(token) + '.*\).*', line) is not None
+
 
 def displayIngredient(ingredient):
     """
@@ -170,6 +210,7 @@ def displayIngredient(ingredient):
         "<span class='%s'>%s</span>" % (tag, " ".join(tokens))
         for tag, tokens in ingredient
     ])
+
 
 # HACK: fix this
 def smartJoin(words):
@@ -279,7 +320,7 @@ def import_data(lines):
         dict([(k, smartJoin(tokens)) for k, tokens in ingredient.iteritems()])
         for ingredient in data
         if len(ingredient)
-        ]
+    ]
     # Add the marked-up display data
     for i, v in enumerate(output):
         output[i]["display"] = displayIngredient(display[i])
@@ -300,7 +341,7 @@ def export_data(lines):
         tokens = tokenize(line_clean)
 
         for i, token in enumerate(tokens):
-            features = getFeatures(token, i+1, tokens)
+            features = getFeatures(token, i + 1, tokens)
             output.append(joinLine([token] + features))
         output.append('')
     return '\n'.join(output)

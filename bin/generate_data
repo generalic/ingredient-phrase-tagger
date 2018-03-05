@@ -3,5 +3,9 @@ import sys
 
 from ingredient_phrase_tagger.training import cli
 
-
+# args = [
+#     '--data-path=nyt-ingredients-snapshot-2015.csv',
+#     '--count=100',
+#     '--offset=0'
+# ]
 cli.Cli(sys.argv[1:]).run()

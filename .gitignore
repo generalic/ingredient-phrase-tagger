@@ -1,6 +1,7 @@
 *.pyc
 build/
 tmp/*
+tmp*/
 log/*
 
 # Created by .ignore support plugin (hsz.mobi)
