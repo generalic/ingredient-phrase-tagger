@@ -15,8 +15,5 @@ setup(
     author_email='',
     license='Apache 2.0',
     install_requires=requires,
-    packages=find_packages(),
-    package_dir={
-        'ingredient_phrase_tagger': 'ingredient_phrase_tagger'
-    }
+    packages=['ingredient_phrase_tagger', 'ingredient_parser']
 )
