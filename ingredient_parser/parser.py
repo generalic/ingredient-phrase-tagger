@@ -9,7 +9,7 @@ from ingredient_phrase_tagger.training import utils
 
 RESULTS_FILE = './results.txt'
 OUTPUT_FILE = './results.json'
-MODEL_FILE = '../tmp/model_file'
+MODEL_FILE = './model_file'
 
 
 def parse_lines(ingredients):

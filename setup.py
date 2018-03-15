@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
-requires, extra = ['Unidecode==0.04.14', 'pandas==0.17.1'], {}
+requires, extra = ['Unidecode==1.0.22', 'pandas==0.22.0'], {}
 if sys.version_info >= (3,):
     extra['use_2to3'] = True
 
@@ -15,5 +15,7 @@ setup(
     author_email='',
     license='Apache 2.0',
     install_requires=requires,
-    packages=['ingredient_phrase_tagger']
+    packages=['ingredient_parser'],
+    package_data={'ingredient_parser': ['model_file']},
+    include_package_data=True
 )
